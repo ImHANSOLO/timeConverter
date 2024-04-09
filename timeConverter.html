@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Time Zone Converter</title>
+    <style>
+      #locations-container {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <input
+        type="text"
+        id="location-input"
+        placeholder="Enter a city name or ZIP code..."
+      />
+      <input type="date" id="date-input" />
+      <input type="time" id="time-input" />
+      <button id="convert-time">Convert Time</button>
+      <div id="locations-container"></div>
+    </div>
+
+    <script type="module">
+      type TimeZoneMap = {
+          [key: string]: string;
+      };
+
+      const zipToTimeZone: TimeZoneMap = {
+          '11111': 'America/Los_Angeles',
+          '22222': 'America/Denver',
+          '33333': 'America/Chicago',
+          '44444': 'America/New_York',
+      };
+
+      document.getElementById('convert-time')!.addEventListener('click', () => {
+          const locationInput: HTMLInputElement = document.getElementById('location-input') as HTMLInputElement;
+          const dateInput: HTMLInputElement = document.getElementById('date-input') as HTMLInputElement;
+          const timeInput: HTMLInputElement = document.getElementById('time-input') as HTMLInputElement;
+
+          const userInput: string = locationInput.value;
+          const inputDate: string = dateInput.value;
+          const inputTime: string = timeInput.value;
+          const timeZone: string = zipToTimeZone[userInput] || userInput;
+          const datetime: Date = new Date(`${inputDate}T${inputTime}`);
+
+          convertAndDisplayTime(datetime, timeZone, 'America/Los_Angeles');
+          convertAndDisplayTime(datetime, timeZone, 'America/Denver');
+          convertAndDisplayTime(datetime, timeZone, 'America/Chicago');
+          convertAndDisplayTime(datetime, timeZone, 'America/New_York');
+      });
+
+      function convertAndDisplayTime(datetime: Date, fromTimeZone: string, toTimeZone: string): void {
+          const options: Intl.DateTimeFormatOptions = { timeZone: toTimeZone, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+          const formatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US', options);
+          const locationsContainer: HTMLElement = document.getElementById('locations-container')!;
+          const timeZoneElement: HTMLDivElement = document.createElement('div');
+          timeZoneElement.textContent = `${toTimeZone}: ${formatter.format(datetime)}`;
+          locationsContainer.appendChild(timeZoneElement);
+      }
+    </script>
+  </body>
+</html>
